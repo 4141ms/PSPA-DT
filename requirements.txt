@@ -1,0 +1,7 @@
+# Install a CUDA-compatible PyTorch build first when required by your system.
+nnunetv2==2.6.2
+torch>=2.1.2,<2.9
+mamba-ssm>=2.2.2
+einops>=0.7
+scipy>=1.10
+SimpleITK>=2.2.1

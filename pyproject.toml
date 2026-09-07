@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "umami-nnunet"
+version = "0.1.0"
+description = "Wavelet-UmamiRefine extension for nnU-Net v2"
+requires-python = ">=3.10"
+dependencies = [
+  "nnunetv2==2.6.2",
+  "torch>=2.1.2,<2.9",
+  "mamba-ssm>=2.2.2",
+  "einops>=0.7",
+  "scipy>=1.10",
+  "SimpleITK>=2.2.1",
+]
+
+[project.scripts]
+umami-preprocess = "umami_nnunet.cli:preprocess_main"
+umami-train = "umami_nnunet.cli:train_main"
+umami-predict-flux = "umami_nnunet.inference.predict_flux:predict_flux_entry_point"
+
+[tool.setuptools.packages.find]
+where = ["src"]

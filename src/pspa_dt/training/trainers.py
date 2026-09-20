@@ -1,8 +1,8 @@
-"""Public implementation of the Wavelet-Umami training method.
+"""Public implementation of the PSPA-DT training method.
 
 This module collects the method-specific parts of the segmentation and flux
 regression trainers in one place. It is intended to be used with nnU-Net v2
-and the UmamiRefine modules included in this project.
+and the PSPA-DT modules included in this project.
 """
 
 from contextlib import nullcontext
@@ -13,17 +13,17 @@ import torch.nn.functional as F
 from torch import nn
 from torch.utils.checkpoint import checkpoint
 
-from umami_nnunet.network.UnetMix import UmamiRefine
-from umami_nnunet.network.WaveletUmamiRefine import DeltaWaveletSSM3D
+from pspa_dt.network.backbones import PSPADTRefineBackbone
+from pspa_dt.network.wavelet_refine import DeltaWaveletSSM3D
 from nnunetv2.training.loss.dice import get_tp_fp_fn_tn
-from umami_nnunet.training.flux_base import (
+from pspa_dt.training.flux_base import (
     nnUNetTrainerFluxRegression,
 )
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 
 
-class WaveletUmamiRefineControl(UmamiRefine):
-    """UmamiRefine with wavelet-domain state-space blocks at stages 2--4."""
+class PSPADT(PSPADTRefineBackbone):
+    """PSPA-DT network for 3-D anatomical and photon-flux prediction."""
 
     def __init__(
         self,
@@ -37,7 +37,7 @@ class WaveletUmamiRefineControl(UmamiRefine):
         self.mblk4[0] = DeltaWaveletSSM3D(256, residual_scale=residual_scale)
 
 
-class nnUNetTrainer_umami_refine_wavelet_control(nnUNetTrainer):
+class nnUNetTrainer_PSPADT(nnUNetTrainer):
     """Segmentation trainer with deep supervision and topology loss."""
 
     def _set_batch_size_and_oversample(self):
@@ -83,7 +83,7 @@ class nnUNetTrainer_umami_refine_wavelet_control(nnUNetTrainer):
         *args,
         **kwargs,
     ) -> nn.Module:
-        return WaveletUmamiRefineControl(
+        return PSPADT(
             in_c=num_input_channels,
             num_classes=num_output_channels,
             residual_scale=1e-3,
@@ -95,7 +95,7 @@ class nnUNetTrainer_umami_refine_wavelet_control(nnUNetTrainer):
             return None
         if len(scales) < 4:
             raise RuntimeError(
-                f"UmamiRefine requires 4 deep-supervision scales, got {len(scales)}"
+                f"PSPA-DT requires 4 deep-supervision scales, got {len(scales)}"
             )
         return scales[:4]
 
@@ -253,12 +253,12 @@ class nnUNetTrainer_umami_refine_wavelet_control(nnUNetTrainer):
         return self._cldice_single(logits, target, eps)
 
 
-class WaveletUmamiRefineControlFlux(nn.Module):
+class PSPADTFlux(nn.Module):
     """Adapt the segmentation backbone to single-output flux regression."""
 
     def __init__(self, in_channels: int, residual_scale: float = 1e-3) -> None:
         super().__init__()
-        self.model = WaveletUmamiRefineControl(
+        self.model = PSPADT(
             in_c=in_channels, num_classes=1, residual_scale=residual_scale
         )
         self.model.out_head2 = nn.Identity()
@@ -274,7 +274,7 @@ class WaveletUmamiRefineControlFlux(nn.Module):
         return output
 
 
-class nnUNetTrainer_umami_refine_wavelet_control_flux(
+class nnUNetTrainer_PSPADTFlux(
     nnUNetTrainerFluxRegression
 ):
     """Train the method for normalized voxelwise flux regression."""
@@ -307,7 +307,7 @@ class nnUNetTrainer_umami_refine_wavelet_control_flux(
         *args,
         **kwargs,
     ) -> nn.Module:
-        return WaveletUmamiRefineControlFlux(num_input_channels)
+        return PSPADTFlux(num_input_channels)
 
     def _bf16_context(self):
         if self.device.type != "cuda":
@@ -359,3 +359,11 @@ class nnUNetTrainer_umami_refine_wavelet_control_flux(
             "mae": float(error.abs().mean().detach().cpu()),
             "mse": float(error.square().mean().detach().cpu()),
         }
+
+
+# Legacy aliases allow checkpoints produced before the paper-aligned rename to
+# be loaded. New experiments and documentation must use the PSPA-DT names.
+WaveletUmamiRefineControl = PSPADT
+WaveletUmamiRefineControlFlux = PSPADTFlux
+nnUNetTrainer_umami_refine_wavelet_control = nnUNetTrainer_PSPADT
+nnUNetTrainer_umami_refine_wavelet_control_flux = nnUNetTrainer_PSPADTFlux

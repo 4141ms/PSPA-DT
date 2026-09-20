@@ -18,13 +18,13 @@ from nnunetv2.utilities.utils import get_filenames_of_train_images_and_targets
 
 from .preprocessing import FluxRegressionPreprocessor
 from .training import (
-    nnUNetTrainer_umami_refine_wavelet_control,
-    nnUNetTrainer_umami_refine_wavelet_control_flux,
+    nnUNetTrainer_PSPADT,
+    nnUNetTrainer_PSPADTFlux,
 )
 
 
 def preprocess_main() -> None:
-    parser = argparse.ArgumentParser(description="Plan and preprocess an Umami dataset")
+    parser = argparse.ArgumentParser(description="Plan and preprocess a PSPA-DT dataset")
     parser.add_argument("dataset_id", type=int)
     parser.add_argument("--mode", choices=("seg", "flux"), required=True)
     parser.add_argument("-np", "--num-processes", type=int, default=8)
@@ -63,7 +63,7 @@ def preprocess_main() -> None:
 
 
 def train_main() -> None:
-    parser = argparse.ArgumentParser(description="Train the standalone Umami nnU-Net extension")
+    parser = argparse.ArgumentParser(description="Train the PSPA-DT nnU-Net extension")
     parser.add_argument("dataset")
     parser.add_argument("--mode", choices=("seg", "flux"), required=True)
     parser.add_argument("--fold", default="0")
@@ -77,9 +77,9 @@ def train_main() -> None:
     plans = load_json(join(base, plans_name + ".json"))
     dataset_json = load_json(join(base, "dataset.json"))
     trainer_class = (
-        nnUNetTrainer_umami_refine_wavelet_control_flux
+        nnUNetTrainer_PSPADTFlux
         if args.mode == "flux"
-        else nnUNetTrainer_umami_refine_wavelet_control
+        else nnUNetTrainer_PSPADT
     )
     fold = args.fold if args.fold == "all" else int(args.fold)
     trainer = trainer_class(

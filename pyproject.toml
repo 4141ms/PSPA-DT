@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "umami-nnunet"
+name = "pspa-dt"
 version = "0.1.0"
-description = "Wavelet-UmamiRefine extension for nnU-Net v2"
+description = "PSPA-DT: end-to-end 3-D photon-flux generation with nnU-Net v2"
 requires-python = ">=3.10"
 dependencies = [
   "nnunetv2==2.6.2",
@@ -17,9 +17,9 @@ dependencies = [
 ]
 
 [project.scripts]
-umami-preprocess = "umami_nnunet.cli:preprocess_main"
-umami-train = "umami_nnunet.cli:train_main"
-umami-predict-flux = "umami_nnunet.inference.predict_flux:predict_flux_entry_point"
+pspa-dt-preprocess = "pspa_dt.cli:preprocess_main"
+pspa-dt-train = "pspa_dt.cli:train_main"
+pspa-dt-predict-flux = "pspa_dt.inference.predict_flux:predict_flux_entry_point"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -6,11 +6,11 @@ warnings.filterwarnings("ignore", category=DeprecationWarning, module="pkg_resou
 
 import torch
 import torch.nn.functional as F
-from umami_nnunet.network.Decoder import DynamicPSPADecoder3D, PSPADecoder3D
-from umami_nnunet.network.model.VSSM import VSSM3D
+from pspa_dt.network.Decoder import DynamicPSPADecoder3D, PSPADecoder3D
+from pspa_dt.network.model.VSSM import VSSM3D
 import torch.nn as nn
-from umami_nnunet.network.model.VSSM import VSSM3D
-from umami_nnunet.network.model.LoE import ChannelAttention3D, LoE3D, LoENm3D
+from pspa_dt.network.model.VSSM import VSSM3D
+from pspa_dt.network.model.LoE import ChannelAttention3D, LoE3D, LoENm3D
 from torch.nn import Conv3d, InstanceNorm3d, LeakyReLU
 
 
@@ -135,9 +135,9 @@ def replace_bn_with_in(model):
             # 递归处理子模块
             replace_bn_with_in(module)
 
-class Umami(nn.Module):
+class PSPADTBackbone(nn.Module):
     """
-    Umami 的 net parameters: 1,462,987 (1.463 M)
+    PSPADTBackbone 的 net parameters: 1,462,987 (1.463 M)
     """
     def __init__(self, in_c=3, num_classes=10, use_fp=False, use_ma=True, use_edl=False):
         super().__init__()
@@ -270,7 +270,7 @@ class Umami(nn.Module):
             else:
                 return p1
 
-class UmamiDynamic(nn.Module):
+class PSPADTDynamicBackbone(nn.Module):
     def __init__(self, in_c=3, num_classes=10, arch_params=None):
         super().__init__()
         
@@ -348,11 +348,11 @@ class UmamiDynamic(nn.Module):
         return outputs[0]
         
 
-class UmamiFlux(nn.Module):
+class PSPADTJointFlux(nn.Module):
     def __init__(self, checkpoint_path=None):
         super().__init__()
         # 1. 初始化模型
-        self.seg_model = Umami(in_c=3, num_classes=10, use_fp=True, use_ma=True)
+        self.seg_model = PSPADTBackbone(in_c=3, num_classes=10, use_fp=True, use_ma=True)
         self.reg_head = nn.Conv3d(10, 1, kernel_size=1)
 
         # 2. 加载权重 (如果提供了路径)
@@ -385,9 +385,9 @@ class UmamiFlux(nn.Module):
         
         return self.reg_head(seg_logits)
 
-class UmamiNODS(nn.Module):
+class PSPADTNoDeepSupervision(nn.Module):
     """
-    Umami without deep supervision. 其 net parameters: 1,462,987 (1.463 M)，和 Umami 一样，因为只是去掉了 deep supervision 的输出头，主干完全一样。
+    PSPADTBackbone without deep supervision. 其 net parameters: 1,462,987 (1.463 M)，和 PSPADTBackbone 一样，因为只是去掉了 deep supervision 的输出头，主干完全一样。
     """
     def __init__(self, in_c=3, num_classes=10, use_fp=False, use_ma=True):
         super().__init__()
@@ -489,9 +489,9 @@ class UmamiNODS(nn.Module):
 
         return p1
 
-class UmamiRefine(nn.Module):
+class PSPADTRefineBackbone(nn.Module):
     """
-    Umami 的 net parameters: 1,462,987 (1.463 M)
+    PSPADTBackbone 的 net parameters: 1,462,987 (1.463 M)
     将最终的输出前多加一个 refine 模块，进行最后的特征融合和预测。
     """
     def __init__(self, in_c=3, num_classes=10):

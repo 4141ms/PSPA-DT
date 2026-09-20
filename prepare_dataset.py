@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create an nnU-Net v2 dataset from the public Umami data layout."""
+"""Create an nnU-Net v2 dataset for PSPA-DT."""
 
 import argparse
 import json
@@ -23,14 +23,14 @@ DEFAULT_LABELS = {
 
 def arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Prepare segmentation or flux-regression data for Umami."
+        description="Prepare segmentation or flux-regression data for PSPA-DT."
     )
     parser.add_argument("--mode", choices=("seg", "flux"), required=True)
     parser.add_argument("--dataset-id", type=int, required=True)
     parser.add_argument("--data-root", type=Path, required=True)
     parser.add_argument("--flux-root", type=Path)
     parser.add_argument("--raw-root", type=Path, required=True)
-    parser.add_argument("--dataset-name", default="Umami")
+    parser.add_argument("--dataset-name", default="PSPADT")
     parser.add_argument("--image-files", nargs="+", default=["t1.nii.gz", "t2.nii.gz", "mra.nii.gz"])
     parser.add_argument("--channel-names", nargs="+", default=["T1", "T2", "MRA"])
     parser.add_argument("--label-file", default="seg.nii.gz")
@@ -108,7 +108,7 @@ def main() -> None:
         "file_ending": ".nii.gz",
         "name": folder_name,
         "licence": "See the license of the original dataset.",
-        "description": "Dataset prepared by the public Umami pipeline.",
+        "description": "Dataset prepared by the public PSPA-DT pipeline.",
         "dataset": dataset_entries,
     }
     output = dataset_dir / "dataset.json"

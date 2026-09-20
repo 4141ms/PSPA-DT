@@ -1,4 +1,4 @@
-"""Module entry point for ``python -m umami_nnunet.cli_train``."""
+"""Module entry point for ``python -m pspa_dt.cli_train``."""
 
 from .cli import train_main
 

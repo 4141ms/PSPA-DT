@@ -5,7 +5,7 @@ usage() {
   sed -n '2,39p' "$0" | sed -n 's/^# //p'
 }
 
-# Install, preprocess, and train the standalone Umami extension.
+# Install, preprocess, and train the standalone PSPA-DT extension.
 #
 # Usage:
 #   ./run.sh seg  --data-root DATA --dataset-id 41 [options]
@@ -69,7 +69,7 @@ fi
 
 if [[ "$install" -eq 1 ]]; then
   "$python_bin" -m pip install --no-build-isolation -e "$script_dir"
-elif ! "$python_bin" -c 'import umami_nnunet' >/dev/null 2>&1; then
+elif ! "$python_bin" -c 'import pspa_dt' >/dev/null 2>&1; then
     echo "ERROR: package not installed; run: $python_bin -m pip install -e $script_dir" >&2
     exit 1
 fi
@@ -91,11 +91,11 @@ if [[ "$skip_prepare" -eq 0 ]]; then
 fi
 
 if [[ "$skip_preprocess" -eq 0 ]]; then
-  "$python_bin" -m umami_nnunet.cli_preprocess "$dataset_id" \
+  "$python_bin" -m pspa_dt.cli_preprocess "$dataset_id" \
     --mode "$mode" -np "$processes"
 fi
 
-train=("$python_bin" -m umami_nnunet.cli_train "$dataset_id"
+train=("$python_bin" -m pspa_dt.cli_train "$dataset_id"
   --mode "$mode" --fold "$fold")
 [[ -n "$continue_flag" ]] && train+=("$continue_flag")
 "${train[@]}"

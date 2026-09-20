@@ -1,7 +1,7 @@
 # Third-party notices and scholarly attribution
 
 This document records the identifiable external software and research ideas
-used by Umami. It is provided for attribution and release review; it is not
+used by PSPA-DT. It is provided for attribution and release review; it is not
 legal advice. A citation does not replace compliance with a software license.
 
 ## Historical decoder provenance
@@ -25,7 +25,7 @@ academic, research, experimental, and personal use, excludes commercial use,
 and states that licensees may not distribute or transfer copies of the
 software. It also places derivative products under the same restrictions.
 
-The current `src/umami_nnunet/network/Decoder.py` is a new project-owned
+The current `src/pspa_dt/network/Decoder.py` is a new project-owned
 implementation named `PSPADecoder3D`. It uses standard PyTorch primitives and
 was written independently for the public release. It does not contain the
 earlier EMCAD-derived source. Because replacing the decoder changes the model,
@@ -43,7 +43,7 @@ code derived from EMCAD.
 
 ## nnU-Net v2
 
-Umami uses nnU-Net for experiment planning, preprocessing infrastructure,
+PSPA-DT uses nnU-Net for experiment planning, preprocessing infrastructure,
 training orchestration, sliding-window inference, and medical-image I/O.
 nnU-Net source code is not vendored; `nnunetv2==2.6.2` is installed as a
 runtime dependency.
@@ -56,13 +56,13 @@ runtime dependency.
   learning-based biomedical image segmentation,”** Nature Methods 18,
   203–211 (2021). <https://doi.org/10.1038/s41592-020-01008-z>
 
-The code under `src/umami_nnunet/training`,
-`src/umami_nnunet/preprocessing`, and `src/umami_nnunet/inference` extends
+The code under `src/pspa_dt/training`,
+`src/pspa_dt/preprocessing`, and `src/pspa_dt/inference` extends
 nnU-Net through subclassing and public APIs.
 
 ## Mamba and selective state spaces
 
-`src/umami_nnunet/network/model/SS2D_Encoder.py` imports the `Mamba` class
+`src/pspa_dt/network/model/SS2D_Encoder.py` imports the `Mamba` class
 from the external `mamba-ssm` package. The package is not vendored.
 
 - Project: <https://github.com/state-spaces/mamba>
@@ -94,7 +94,7 @@ copyright notice and MIT permission notice must be retained with those files.
 ## clDice
 
 The connectivity loss in
-`src/umami_nnunet/training/trainers.py` implements differentiable 3-D soft
+`src/pspa_dt/training/trainers.py` implements differentiable 3-D soft
 skeletonization and centerline Dice based on:
 
 - Suprosanna Shit, Johannes C. Paetzold, Anjany Sekuboyina, Ivan Ezhov,
@@ -105,16 +105,16 @@ skeletonization and centerline Dice based on:
 - Reference implementation: <https://github.com/jocpae/clDice>
 - Reference implementation license: MIT License
 
-The Umami implementation includes project-specific handling for multiclass
+The PSPA-DT implementation includes project-specific handling for multiclass
 targets, ignore labels, deep supervision, and activation checkpointing.
 
 ## Haar wavelet transform
 
-`src/umami_nnunet/network/WaveletUmami.py` implements a one-level separable
+`src/pspa_dt/network/wavelet.py` implements a one-level separable
 3-D Haar discrete wavelet transform and its inverse directly with PyTorch
 tensor operations. No third-party wavelet library is bundled. The Haar
 transform is a standard mathematical construction; the surrounding wavelet
-fusion, gating, and residual integration are part of the Umami research code.
+fusion, gating, and residual integration are part of the PSPA-DT research code.
 
 ## Components currently recorded as project code
 
@@ -122,12 +122,12 @@ The following components have no identifiable external source recorded in the
 available source files or Git history and are therefore documented here as
 project-specific implementations pending confirmation by the authors:
 
-- `Umami`, `UmamiDynamic`, `UmamiFlux`, `UmamiNODS`, and `UmamiRefine` in
+- `PSPADTBackbone`, `PSPADTDynamicBackbone`, `PSPADTJointFlux`, `PSPADTNoDeepSupervision`, and `PSPADTRefineBackbone` in
   `network/UnetMix.py`;
 - `LoENm3D`, `LoE3D`, and associated channel-attention blocks in
   `network/model/LoE.py`;
 - `MultiFrequencyChannelAttention3D` in `network/MFCA.py`;
-- `WaveletSSM3D`, `DeltaWaveletSSM3D`, and the Wavelet-Umami integration;
+- `WaveletSSM3D`, `DeltaWaveletSSM3D`, and the PSPA-DT wavelet integration;
 - flux normalization, regression adaptation, export, and evaluation code.
 
 Before release, the authors must confirm that these files were written by the
@@ -205,7 +205,7 @@ additional terms; consult the package and CUDA distribution documentation.
 - [ ] Confirm the authorship/provenance of `LoE.py`, `MFCA.py`, `UnetMix.py`,
       and the 3-D selective-scan adaptations.
 - [ ] Preserve upstream copyright and license notices in adapted source files.
-- [ ] Add the Umami paper citation, DOI, authors, and institutional affiliation.
+- [ ] Add the PSPA-DT paper citation, DOI, authors, and institutional affiliation.
 - [ ] Confirm that dataset and pretrained-weight licenses allow publication.
 - [ ] Re-run this audit against the exact commit used for the public release.
 

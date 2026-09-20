@@ -5,7 +5,7 @@ import torch
 # from mamba_ssm.ops.selective_scan_interface import selective_scan_fn
 from mamba_ssm import Mamba
 from einops import repeat
-from umami_nnunet.network.model.archi_utils import get_permute_order
+from pspa_dt.network.model.archi_utils import get_permute_order
 
 class SS2D_encoder(nn.Module):
     def __init__(

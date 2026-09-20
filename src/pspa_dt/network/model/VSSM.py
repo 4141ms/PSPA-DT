@@ -1,9 +1,9 @@
 """ CVPR 2025 SaMam"""
 import torch.nn as nn
-from umami_nnunet.network.model.archi_utils import PatchEmbed,PatchUnEmbed, PatchEmbed3D, PatchUnEmbed3D
+from pspa_dt.network.model.archi_utils import PatchEmbed,PatchUnEmbed, PatchEmbed3D, PatchUnEmbed3D
 
 
-from umami_nnunet.network.model.SS2D_Encoder import SS3D_encoder
+from pspa_dt.network.model.SS2D_Encoder import SS3D_encoder
 
 class VSSM3D(nn.Module):
     def __init__(

@@ -1,4 +1,4 @@
-"""Module entry point for ``python -m umami_nnunet.cli_preprocess``."""
+"""Module entry point for ``python -m pspa_dt.cli_preprocess``."""
 
 from .cli import preprocess_main
 

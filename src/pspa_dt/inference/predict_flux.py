@@ -15,8 +15,8 @@ from nnunetv2.paths import nnUNet_preprocessed
 from nnunetv2.preprocessing.preprocessors.default_preprocessor import DefaultPreprocessor
 from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 from nnunetv2.utilities.file_path_utilities import get_output_folder
-from umami_nnunet.training.trainers import (
-    nnUNetTrainer_umami_refine_wavelet_control_flux,
+from pspa_dt.training.trainers import (
+    nnUNetTrainer_PSPADTFlux,
 )
 
 
@@ -458,8 +458,11 @@ class FluxRegressionPredictor(nnUNetPredictor):
         original_finder = prediction_module.recursive_find_python_class
 
         def find_trainer(folder, class_name, current_module):
-            if class_name == "nnUNetTrainer_umami_refine_wavelet_control_flux":
-                return nnUNetTrainer_umami_refine_wavelet_control_flux
+            if class_name in {
+                "nnUNetTrainer_PSPADTFlux",
+                "nnUNetTrainer_umami_refine_wavelet_control_flux",
+            }:
+                return nnUNetTrainer_PSPADTFlux
             return original_finder(folder, class_name, current_module)
 
         prediction_module.recursive_find_python_class = find_trainer
@@ -489,12 +492,12 @@ class FluxRegressionPredictor(nnUNetPredictor):
         network = self.network._orig_mod if hasattr(self.network, '_orig_mod') else self.network
         if not hasattr(network, 'inference_output'):
             if output == 'flux':
-                # The public WaveletUmamiRefineControlFlux model is already a
+                # The public PSPADTFlux model is already a
                 # dedicated one-channel regressor and needs no output switch.
                 return
             raise RuntimeError(
                 f'{type(network).__name__} does not support optional segmentation output. '
-                'Use nnUNetTrainer_umami_flux_v6 or disable --save_seg.'
+                'The public PSPA-DT flux model does not expose a segmentation branch.'
             )
         network.inference_output = output
 
@@ -600,7 +603,7 @@ def predict_flux_entry_point() -> None:
     parser.add_argument('-o', required=True, help='Output folder for Float32 flux volumes.')
     parser.add_argument('-d', required=True, help='Dataset name or ID.')
     parser.add_argument('-p', default='nnUNetPlans_flux_regression', help='Plans identifier.')
-    parser.add_argument('-tr', default='nnUNetTrainer_umami_refine_wavelet_control_flux',
+    parser.add_argument('-tr', default='nnUNetTrainer_PSPADTFlux',
                         help='Trainer class used for training.')
     parser.add_argument('-c', required=True, help='nnU-Net configuration.')
     parser.add_argument('-f', nargs='+', default=(0, 1, 2, 3, 4), help='Fold(s) used for prediction.')

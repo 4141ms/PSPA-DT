@@ -95,7 +95,7 @@ class DecoderStage3D(nn.Module):
 
 
 class PSPADecoder3D(nn.Module):
-    """Four-level decoder used by the fixed UmamiRefine architecture.
+    """Four-level decoder used by the fixed PSPA-DT architecture.
 
     The returned list is ordered from the bottleneck to full resolution so it
     remains compatible with the four deep-supervision heads.

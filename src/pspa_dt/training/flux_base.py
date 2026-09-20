@@ -19,7 +19,7 @@ from nnunetv2.training.dataloading.nnunet_dataset import infer_dataset_class
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 from nnunetv2.utilities.collate_outputs import collate_outputs
 from nnunetv2.utilities.default_n_proc_DA import get_allowed_n_proc_DA
-from umami_nnunet.inference.metrics import compute_metrics_on_folder_regression
+from pspa_dt.inference.metrics import compute_metrics_on_folder_regression
 from nnunetv2.utilities.get_network_from_plans import get_network_from_plans
 from nnunetv2.utilities.helpers import dummy_context
 from nnunetv2.utilities.file_path_utilities import check_workers_alive_and_busy

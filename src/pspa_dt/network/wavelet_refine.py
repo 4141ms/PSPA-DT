@@ -1,17 +1,17 @@
-"""Wavelet-domain Umami with a full-resolution refinement head."""
+"""Wavelet-domain PSPA-DT with a full-resolution refinement head."""
 
 from typing import Sequence
 
 import torch
 from torch import nn
 
-from umami_nnunet.network.WaveletUmami import (
+from pspa_dt.network.wavelet import (
     SharedHighFrequencyGate3D,
-    WaveletUmami,
+    PSPADTWavelet,
     haar_dwt3d,
     haar_idwt3d,
 )
-from umami_nnunet.network.model.VSSM import VSSM3D
+from pspa_dt.network.model.VSSM import VSSM3D
 
 
 class DeltaWaveletSSM3D(nn.Module):
@@ -31,8 +31,8 @@ class DeltaWaveletSSM3D(nn.Module):
         return x + self.residual_scale * (reconstructed - x)
 
 
-class WaveletUmamiRefine(WaveletUmami):
-    """Plans-aware WaveletUmami with refinement at the finest output scale."""
+class PSPADTWaveletRefine(PSPADTWavelet):
+    """Plans-aware PSPA-DT wavelet model with finest-scale refinement."""
 
     def __init__(self, in_c: int, num_classes: int, arch_params: dict,
                  deep_supervision: bool = True, wavelet_stages: int = 2,
@@ -49,7 +49,7 @@ class WaveletUmamiRefine(WaveletUmami):
         wavelet_stages = max(1, min(int(wavelet_stages), len(features)))
         first_wavelet_stage = len(features) - wavelet_stages
         for stage_index in range(first_wavelet_stage, len(features)):
-            # Preserve the following LoEN block created by WaveletUmami while
+            # Preserve the following LoEN block created by PSPADTWavelet while
             # replacing its wavelet operation with delta-only residual fusion.
             self.feature_blocks[stage_index][0] = DeltaWaveletSSM3D(
                 features[stage_index], residual_scale=residual_scale

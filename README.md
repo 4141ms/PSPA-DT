@@ -1,8 +1,14 @@
-# Umami
+# PSPA-DT
 
-Umami is an end-to-end deep learning framework for generating 3D photon flux distributions. It takes multimodal medical images as input and combines wavelet-domain feature modeling with state-space models to directly predict photon flux within biological tissues. Built on nnU-Net, the project provides a complete pipeline for data preprocessing, model training, inference, flux denormalization, and evaluation, offering a fast alternative to computationally expensive conventional optical simulations.
+PSPA-DT is an end-to-end deep learning framework for generating 3-D photon
+flux distributions. It takes multimodal medical images as input and combines
+pyramid spatial projection aggregation, wavelet-domain feature modeling, and
+state-space models to directly predict photon flux within biological tissues.
+Built on nnU-Net, the project provides a complete pipeline for preprocessing,
+training, inference, flux denormalization, and evaluation, offering a fast
+alternative to computationally expensive conventional optical simulations.
 
-This repository packages Wavelet-UmamiRefine as an extension of the released
+This repository packages PSPA-DT as an extension of the released
 `nnunetv2==2.6.2`. It contains the method's network blocks, segmentation and
 flux-regression trainers, continuous-target preprocessing, evaluation metrics,
 dataset conversion, and command-line entry points.
@@ -13,8 +19,8 @@ Python 3.10 and a CUDA GPU with BF16 support are recommended. Install the
 PyTorch build matching the local CUDA toolkit first, then install this package:
 
 ```bash
-conda create -n umami python=3.10 -y
-conda activate umami
+conda create -n pspa-dt python=3.10 -y
+conda activate pspa-dt
 # Example only; select the correct command at https://pytorch.org/get-started/
 pip install torch --index-url https://download.pytorch.org/whl/cu121
 pip install --no-build-isolation -e .
@@ -107,8 +113,8 @@ python prepare_dataset.py --mode flux --dataset-id 411 \
   --data-root /path/to/DATA --flux-root /path/to/FLUX \
   --raw-root "$nnUNet_raw"
 
-umami-preprocess 411 --mode flux -np 8
-umami-train 411 --mode flux --fold 0 --device cuda
+pspa-dt-preprocess 411 --mode flux -np 8
+pspa-dt-train 411 --mode flux --fold 0 --device cuda
 ```
 
 For segmentation, replace `flux` with `seg` and omit `--flux-root`.
@@ -116,7 +122,7 @@ For segmentation, replace `flux` with `seg` and omit `--flux-root`.
 Flux inference on channel-suffixed nnU-Net test images:
 
 ```bash
-umami-predict-flux -d 411 -c 3d_fullres -f 0 \
+pspa-dt-predict-flux -d 411 -c 3d_fullres -f 0 \
   -i /path/to/imagesTs -o /path/to/predictions --disable_tta
 ```
 
@@ -142,8 +148,8 @@ experiment's reproducibility record and should be retained with checkpoints.
 ## 6. Repository structure
 
 ```text
-src/umami_nnunet/
-  network/          complete Umami/Wavelet model dependency closure
+src/pspa_dt/
+  network/          complete PSPA-DT network implementation
   training/         segmentation and flux trainers plus flux data loader
   preprocessing/    continuous flux preprocessor
   inference/        continuous regression evaluation metrics

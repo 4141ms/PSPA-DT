@@ -1,4 +1,4 @@
-"""Plans-aware Umami with state-space scanning in the 3D Haar wavelet domain."""
+"""Plans-aware PSPA-DT with state-space scanning in the 3-D Haar domain."""
 
 import math
 from typing import List, Sequence, Tuple
@@ -7,9 +7,9 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-from umami_nnunet.network.UnetMix import UmamiDynamic, replace_bn_with_in
-from umami_nnunet.network.model.LoE import LoENm3D
-from umami_nnunet.network.model.VSSM import VSSM3D
+from pspa_dt.network.backbones import PSPADTDynamicBackbone, replace_bn_with_in
+from pspa_dt.network.model.LoE import LoENm3D
+from pspa_dt.network.model.VSSM import VSSM3D
 
 
 _SUBBAND_BITS: Tuple[Tuple[int, int, int], ...] = tuple(
@@ -98,13 +98,13 @@ class WaveletSSM3D(nn.Module):
         return x + self.residual_scale * reconstructed
 
 
-class WaveletUmami(nn.Module):
-    """Dynamic Umami using WaveletSSM3D in the deepest encoder stages."""
+class PSPADTWavelet(nn.Module):
+    """Dynamic PSPA-DT backbone using wavelet SSMs in its deepest stages."""
 
     def __init__(self, in_c: int, num_classes: int, arch_params: dict,
                  deep_supervision: bool = True, wavelet_stages: int = 2):
         super().__init__()
-        backbone = UmamiDynamic(in_c=in_c, num_classes=num_classes, arch_params=arch_params)
+        backbone = PSPADTDynamicBackbone(in_c=in_c, num_classes=num_classes, arch_params=arch_params)
         self.encoder_stages = backbone.encoder_stages
         self.decoder = backbone.decoder
         self.out_heads = backbone.out_heads

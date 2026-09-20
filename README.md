@@ -154,11 +154,23 @@ src/pspa_dt/
   preprocessing/    continuous flux preprocessor
   inference/        continuous regression evaluation metrics
   cli.py             preprocessing and training orchestration
+src/trad_sim/        conventional optical and acoustic simulation utilities
 prepare_dataset.py   raw-data conversion
 run.sh               one-command entry point
 ```
 
-## 7. Reproducibility checklist
+## 7. Traditional simulation utilities
+
+The optional MATLAB code in [`src/trad_sim`](src/trad_sim) provides the
+conventional reference pipeline used to generate photon-flux and
+initial-pressure data. It includes MCXLAB-based optical simulations for IXI and
+FLARE23, followed by k-Wave acoustic simulation and reconstruction. All input
+and output paths, wavelengths, GPU identifiers, and random seeds are supplied
+as function arguments; no machine-specific paths are embedded in the code.
+See [`src/trad_sim/README.md`](src/trad_sim/README.md) for dependencies and
+example commands.
+
+## 8. Reproducibility checklist
 
 For a paper release, archive the following alongside this repository:
 
